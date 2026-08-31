@@ -43,7 +43,7 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
     >
       <aside className="visit-drawer" role="dialog" aria-modal="true" aria-labelledby="visit-list-title">
         <div className="drawer-topline">
-          <span>LOCAL // PRIVATE</span>
+          <span>SAVED ON THIS DEVICE</span>
           <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="Close visit list">
             ×
           </button>
@@ -51,7 +51,7 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
 
         <div className="visit-drawer__heading">
           <p className="section-kicker">Visit list</p>
-          <h2 id="visit-list-title">{counterMode ? 'Counter view.' : 'Your selected signals.'}</h2>
+          <h2 id="visit-list-title">{counterMode ? 'Show this at the counter.' : 'Items for your visit.'}</h2>
           <p>
             {counterMode
               ? 'Show this screen at the counter and ask the store team about comparable available items.'
@@ -80,14 +80,14 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
           <div className="visit-empty">
             <span aria-hidden="true">◎</span>
             <h3>No items selected yet.</h3>
-            <p>Browse the digital shelf and add concept items you would like to ask about.</p>
+            <p>Browse the sample catalog and save items you want to ask about in store.</p>
           </div>
         )}
 
         <div className="visit-drawer__actions">
           {items.length > 0 && (
             <button className="button button--primary" type="button" onClick={() => setCounterMode((value) => !value)}>
-              {counterMode ? 'Return to list' : 'Show counter view'}
+              {counterMode ? 'Return to list' : 'Show at counter'}
             </button>
           )}
           <a className="button button--ghost" href={store.phone.href}>
