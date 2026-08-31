@@ -16,8 +16,8 @@ export function Navigation({
       </a>
 
       <nav className="topbar__nav" aria-label="Primary navigation">
-        <a href="#channels">Channels</a>
-        <a href="#explore">Explore</a>
+        <a href="#channels">Categories</a>
+        <a href="#explore">Browse</a>
         <a href="#visit">Visit</a>
       </nav>
 
@@ -28,7 +28,7 @@ export function Navigation({
           type="button"
           onClick={onThemeToggle}
           aria-label={`Switch to ${theme === 'obsidian' ? 'Chrome Ember' : 'Obsidian'} theme`}
-          title="Switch atmosphere"
+          title="Switch theme"
         >
           <span aria-hidden="true">{theme === 'obsidian' ? '◐' : '◑'}</span>
         </button>
