@@ -29,6 +29,7 @@ const combinedCopy = customerFacingSources.join('\n');
 const rejectedPhrases = [
   'Find the shop, not a placeholder',
   'A cinematic preview of your local shop',
+  'A cinematic, browse-only concept experience',
   'assemble a private visit list',
   'navigate directly to Valley Road',
   'Choose a frequency',
