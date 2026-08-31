@@ -9,7 +9,8 @@ The experience combines React, Three.js, accessible HTML, and a local mock catal
 ## Experience
 
 - 21+ access acknowledgment
-- Adaptive Three.js **Signal Core** hero scene
+- Interactive Three.js hookah showcase with drag and keyboard rotation
+- Four user-controlled concept finishes: **Crystal**, **Chrome**, **Onyx**, and **Iridescent**
 - Two visual atmospheres: **Obsidian** and **Chrome Ember**
 - Reduced-motion mode and non-WebGL fallback
 - Orbital category navigation
@@ -17,9 +18,19 @@ The experience combines React, Three.js, accessible HTML, and a local mock catal
 - Product detail drawers
 - Browser-local **Visit List** and counter view
 - Live open/closed calculation in `America/New_York`
+- Real map centered on the Valley Road shop location
+- Interactive street-level storefront context
 - Direct call and directions actions
 - Responsive mobile action dock
 - No checkout, customer accounts, analytics, or external trackers
+
+## GitHub Pages
+
+Deployment target:
+
+**https://prithiraj.github.io/montclair-smoke-shop-demo/**
+
+The workflow in `.github/workflows/pages.yml` validates the content, runs tests, builds Vite with the repository base path, and deploys the `dist` directory through the official GitHub Pages actions whenever `main` changes.
 
 ## Public business data used in the demo
 
@@ -32,7 +43,7 @@ The experience combines React, Three.js, accessible HTML, and a local mock catal
 | Email | Not included | No verified public email found |
 | Official logo | Not included | No verified reusable logo asset found |
 
-The interface uses an original concept wordmark and abstract SVG illustrations. It does not copy a directory image or claim that the concept identity is official.
+The interface uses an original concept wordmark and procedural graphics. It does not claim that the concept identity or the displayed hookah finishes are official shop branding or verified inventory.
 
 ## Stack
 
@@ -65,9 +76,9 @@ npm run preview
 
 `npm run validate` protects important content guardrails, including the absence of invented email/website fields and ecommerce language.
 
-## Netlify deployment
+## Optional Netlify deployment
 
-The repository contains a complete `netlify.toml` configuration:
+The repository retains a `netlify.toml` configuration for a later commercial-host migration:
 
 ```text
 Build command: npm run build
@@ -75,13 +86,13 @@ Publish directory: dist
 Node version: 22.16.0
 ```
 
-Connect this GitHub repository to Netlify and deploy from `main`. SPA redirects, security headers, immutable asset caching, and `noindex` demo protection are already configured.
-
 ## Project structure
 
 ```text
 .
-├── .github/workflows/ci.yml
+├── .github/workflows/
+│   ├── ci.yml
+│   └── pages.yml
 ├── docs/
 │   ├── CONTENT_CHECKLIST.md
 │   └── MASTER_PLAN.md
@@ -98,6 +109,7 @@ Connect this GitHub repository to Netlify and deploy from `main`. SPA redirects,
 │   ├── hooks/
 │   ├── lib/
 │   ├── App.jsx
+│   ├── hookah-redesign.css
 │   ├── main.jsx
 │   └── styles.css
 ├── tests/storeStatus.test.mjs
