@@ -26,25 +26,25 @@ const HOOKAH_FINISHES = [
   {
     id: 'crystal',
     shortLabel: 'Crystal',
-    label: 'Crystal finish',
+    label: 'Crystal',
     note: 'Cool glass and silver',
   },
   {
     id: 'chrome',
     shortLabel: 'Chrome',
-    label: 'Chrome finish',
+    label: 'Chrome',
     note: 'Polished metal and neutral light',
   },
   {
     id: 'onyx',
-    shortLabel: 'Onyx',
-    label: 'Onyx finish',
+    shortLabel: 'Matte black',
+    label: 'Matte black',
     note: 'Dark metal and warm light',
   },
   {
     id: 'iridescent',
     shortLabel: 'Iridescent',
-    label: 'Iridescent finish',
+    label: 'Iridescent',
     note: 'Cyan and magenta glow',
   },
 ];
@@ -238,16 +238,15 @@ export default function App() {
                 {status.label} // Montclair, New Jersey
               </p>
               <h1 id="hero-title">
-                <span>Explore before</span>
+                <span>Browse before</span>
                 <span className="gradient-text">you visit.</span>
               </h1>
               <p className="hero__lede">
-                Browse featured categories, save items you want to ask about in store, and get directions to
-                127 Valley Road.
+                View sample categories, save items you want to ask about, and get directions to 127 Valley Road.
               </p>
               <div className="hero__actions">
                 <a className="button button--primary" href="#explore">
-                  Browse featured items <span aria-hidden="true">↘</span>
+                  Browse sample items <span aria-hidden="true">↘</span>
                 </a>
                 <a className="button button--ghost" href="#visit">
                   Get directions
@@ -261,14 +260,14 @@ export default function App() {
             </div>
 
             <div className="hero__artifact-label hero__artifact-label--hookah">
-              <span>FEATURED VISUAL</span>
-              <strong>Hookah concept artwork</strong>
-              <small>Choose a finish to change the image</small>
+              <span>FEATURED ARTWORK</span>
+              <strong>Hookah showcase</strong>
+              <small>Choose a color treatment</small>
             </div>
 
-            <div className="hookah-materials glass-panel" aria-label="Hookah concept finish">
+            <div className="hookah-materials glass-panel" aria-label="Hookah artwork color treatment">
               <div className="hookah-materials__heading">
-                <span>Artwork finish</span>
+                <span>Color treatment</span>
                 <strong>{activeFinish.label}</strong>
                 <small>{activeFinish.note}</small>
               </div>
@@ -286,7 +285,7 @@ export default function App() {
                   </button>
                 ))}
               </div>
-              <p>Concept artwork only. Actual products and finishes may differ.</p>
+              <p>Illustration only. The store’s current selection may differ.</p>
             </div>
 
             <StoreSignal store={store} status={status} />
