@@ -1,0 +1,69 @@
+name: Materialize and verify MONTCLAIR SIGNAL
+
+on:
+  push:
+    branches: ["build/montclair-signal"]
+    paths:
+      - ".bootstrap/**"
+      - ".github/workflows/bootstrap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout staging branch
+        uses: actions/checkout@v4
+        with:
+          ref: build/montclair-signal
+          fetch-depth: 0
+
+      - name: Verify and materialize source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/part-* > /tmp/project.tar.gz.b64
+          echo "6fe18583c61edf42d5d0d7ff495e5e38275d1e150b95f70659fe97071838d18e  /tmp/project.tar.gz.b64" | sha256sum -c -
+          base64 --decode /tmp/project.tar.gz.b64 | tar --no-same-owner -xzf -
+          rm -rf .bootstrap
+          rm -f .github/workflows/ci.yml
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate public content
+        run: npm run validate
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Upload production artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: montclair-signal-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Commit verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- . ':(exclude).github/workflows/bootstrap.yml'
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: build MONTCLAIR SIGNAL interactive demo"
+          git push origin HEAD:build/montclair-signal
