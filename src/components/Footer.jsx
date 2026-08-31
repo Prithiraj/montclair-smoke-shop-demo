@@ -10,15 +10,15 @@ export function Footer({ store }) {
         </p>
       </div>
       <div className="footer__contact">
-        <span>Direct signal</span>
+        <span>Contact</span>
         <a href={store.phone.href}>{store.phone.display}</a>
         <a href={store.directionsUrl} target="_blank" rel="noreferrer">
           {store.address.formatted} ↗
         </a>
       </div>
       <div className="footer__legal">
-        <span>21+ concept experience</span>
-        <span>No checkout · No accounts · No tracking</span>
+        <span>For adults 21 and older</span>
+        <span>No checkout, accounts, or tracking</span>
         <span>© {new Date().getFullYear()} Concept presentation</span>
       </div>
     </footer>
