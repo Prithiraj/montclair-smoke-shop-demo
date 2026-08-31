@@ -11,10 +11,10 @@ export function CategoryOrbit({ categories, activeCategory, onSelect }) {
   const selected =
     categories.find((category) => category.id === activeCategory) ?? {
       id: 'all',
-      label: 'All channels',
-      code: 'CH-00',
+      label: 'All categories',
+      code: 'CAT-00',
       accent: '#63f5f2',
-      description: 'Six conceptual channels, unified in one browse-only collection.',
+      description: 'Browse all of the sample categories included in this concept.',
     };
 
   const choose = (category) => {
@@ -27,11 +27,12 @@ export function CategoryOrbit({ categories, activeCategory, onSelect }) {
     <section className="section section--orbit" id="channels" aria-labelledby="channels-title">
       <div className="section-heading reveal">
         <div>
-          <p className="section-kicker">02 // Collection channels</p>
-          <h2 id="channels-title">Choose a frequency.</h2>
+          <p className="section-kicker">02 // Product categories</p>
+          <h2 id="channels-title">Choose what you want to browse.</h2>
         </div>
         <p>
-          Browse a conceptual inventory system designed to help customers understand the store before they arrive.
+          Select a category to jump to the sample catalog. Products, prices, and availability must be
+          confirmed with the store.
         </p>
       </div>
 
@@ -45,7 +46,7 @@ export function CategoryOrbit({ categories, activeCategory, onSelect }) {
         <div className="orbit-core" aria-hidden="true">
           <span>{selected.code}</span>
           <strong>{selected.label}</strong>
-          <small>Active channel</small>
+          <small>Selected category</small>
         </div>
 
         {categories.map((category, index) => {
