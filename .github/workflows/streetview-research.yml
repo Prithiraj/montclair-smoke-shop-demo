@@ -1,0 +1,84 @@
+name: Identify storefront Street View heading
+
+on:
+  push:
+    branches: ["redesign/hookah-map"]
+    paths:
+      - ".github/workflows/streetview-research.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install panorama tooling
+        run: |
+          python3 -m pip install --disable-pip-version-check --quiet streetlevel py360convert pillow numpy
+
+      - name: Download panorama and build heading sheet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          import numpy as np
+          import py360convert
+          from PIL import Image, ImageDraw
+          from streetlevel import streetview
+
+          PANO_ID = 'DQsmIN4XXa6V3eOitOKiDQ'
+          pano = streetview.find_panorama_by_id(PANO_ID)
+          if pano is None:
+              raise SystemExit('Panorama not found')
+
+          print('PANO_METADATA', pano)
+          image = streetview.get_panorama(pano, zoom=3).convert('RGB')
+          image.save('streetview-panorama.jpg', quality=88)
+          Path('streetview-metadata.txt').write_text(repr(pano) + '\n')
+
+          source = np.asarray(image)
+          headings = list(range(0, 360, 15))
+          card_width = 480
+          image_height = 300
+          label_height = 36
+          cards = []
+
+          for heading in headings:
+              perspective = py360convert.e2p(
+                  source,
+                  fov_deg=(72, 48),
+                  u_deg=heading,
+                  v_deg=-2,
+                  out_hw=(image_height, card_width),
+              )
+              card = Image.new('RGB', (card_width, image_height + label_height), '#050609')
+              card.paste(Image.fromarray(perspective.astype(np.uint8)), (0, label_height))
+              draw = ImageDraw.Draw(card)
+              draw.text((14, 11), f'u={heading} degrees', fill='white')
+              cards.append(card)
+
+          cols = 4
+          rows = (len(cards) + cols - 1) // cols
+          sheet = Image.new('RGB', (cols * card_width, rows * (image_height + label_height)), '#050609')
+          for index, card in enumerate(cards):
+              sheet.paste(card, ((index % cols) * card_width, (index // cols) * (image_height + label_height)))
+          sheet.save('streetview-heading-sheet.jpg', quality=91)
+          PY
+
+      - name: Upload Street View research
+        uses: actions/upload-artifact@v4
+        with:
+          name: streetview-storefront-research
+          path: |
+            streetview-heading-sheet.jpg
+            streetview-metadata.txt
+          if-no-files-found: error
+          retention-days: 1
