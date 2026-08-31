@@ -13,7 +13,7 @@ export const store = {
   conceptName: 'MONTCLAIR // SIGNAL',
   signalCode: 'SIGNAL 127',
   description:
-    'A futuristic, browse-only concept experience for a local Montclair smoke and lifestyle accessories shop.',
+    'A demo website for Montclair Smoke Shop with sample products, store hours, phone, map, and directions.',
   address: {
     street: '127 Valley Road',
     city: 'Montclair',
