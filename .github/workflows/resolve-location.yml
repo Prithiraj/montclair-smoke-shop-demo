@@ -12,92 +12,60 @@ permissions:
 jobs:
   resolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install panorama tooling
+      - name: Build recent panorama heading comparison
+        shell: bash
         run: |
-          python3 -m pip install --disable-pip-version-check --quiet streetview==0.1.0 py360convert==1.0.4
+          python3 - <<'PY'
+          from pathlib import Path
 
-      - name: Resolve panoramas and create heading sheet
+          pano = 'DQsmIN4XXa6V3eOitOKiDQ'
+          lat = '40.821979851'
+          lng = '-74.219975507'
+          headings = (100, 120, 130, 140, 160, 180)
+          cards = []
+          for heading in headings:
+              src = (
+                  'https://www.google.com/maps/embed?pb='
+                  f'!4v1788260000000!6m8!1m7!1s{pano}!2m2!1d{lat}!2d{lng}'
+                  f'!3f{heading}!4f0!5f0.7820865974627469'
+              )
+              cards.append(
+                  f'<section><h2>{heading}°</h2><iframe src="{src}" loading="eager" '
+                  'allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></section>'
+              )
+          html = f'''<!doctype html><html><head><meta charset="utf-8"><style>
+          html,body{{margin:0;background:#050609;color:white;font-family:system-ui}}
+          main{{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}}
+          section{{border:1px solid #334;background:#090d12;padding:8px}}
+          h2{{font-size:14px;margin:0 0 6px}}
+          iframe{{width:100%;height:500px;border:0}}
+          </style></head><body><main>{''.join(cards)}</main></body></html>'''
+          Path('streetview-grid.html').write_text(html)
+          PY
+
+      - name: Capture heading comparison
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import math
-          from pathlib import Path
+          python3 -m http.server 8000 >/tmp/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          "$BROWSER" --headless=new --no-sandbox --disable-dev-shm-usage \
+            --window-size=1600,1800 --virtual-time-budget=18000 \
+            --screenshot=streetview-headings.png http://127.0.0.1:8000/streetview-grid.html
 
-          import numpy as np
-          import py360convert
-          from PIL import Image, ImageDraw
-          from streetview import get_panorama, search_panoramas
-
-          TARGET_LAT = 40.8218887
-          TARGET_LON = -74.2198311
-
-          def haversine(lat1, lon1, lat2, lon2):
-              radius = 6_371_000
-              phi1, phi2 = math.radians(lat1), math.radians(lat2)
-              dphi = math.radians(lat2 - lat1)
-              dlambda = math.radians(lon2 - lon1)
-              value = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
-              return 2 * radius * math.asin(math.sqrt(value))
-
-          panos = search_panoramas(lat=TARGET_LAT, lon=TARGET_LON)
-          if not panos:
-              raise SystemExit('No panoramas returned')
-
-          panos = sorted(
-              panos,
-              key=lambda pano: haversine(TARGET_LAT, TARGET_LON, pano.lat, pano.lon),
-          )
-          print('PANORAMA_RESULTS_BEGIN')
-          for index, pano in enumerate(panos[:12]):
-              distance = haversine(TARGET_LAT, TARGET_LON, pano.lat, pano.lon)
-              print(
-                  f'{index}: pano_id={pano.pano_id} lat={pano.lat:.9f} lon={pano.lon:.9f} '
-                  f'distance_m={distance:.1f} heading={pano.heading} pitch={pano.pitch} date={pano.date}'
-              )
-          print('PANORAMA_RESULTS_END')
-
-          selected = panos[0]
-          Path('resolved-panorama.txt').write_text(
-              f'pano_id={selected.pano_id}\nlat={selected.lat}\nlon={selected.lon}\nheading={selected.heading}\n'
-              f'pitch={selected.pitch}\ndate={selected.date}\n'
-          )
-
-          panorama = get_panorama(selected.pano_id, zoom=2)
-          panorama.save('resolved-panorama.jpg', quality=88)
-          source = np.asarray(panorama.convert('RGB'))
-
-          headings = (0, 45, 90, 135, 180, 225, 270, 315)
-          cards = []
-          for heading in headings:
-              perspective = py360convert.e2p(source, fov_deg=(88, 68), u_deg=heading, v_deg=0, out_hw=(500, 700))
-              card = Image.fromarray(perspective.astype(np.uint8))
-              canvas = Image.new('RGB', (700, 540), '#050609')
-              canvas.paste(card, (0, 40))
-              draw = ImageDraw.Draw(canvas)
-              draw.text((18, 12), f'{heading} degrees', fill='white')
-              cards.append(canvas)
-
-          sheet = Image.new('RGB', (1400, 2160), '#050609')
-          for index, card in enumerate(cards):
-              x = (index % 2) * 700
-              y = (index // 2) * 540
-              sheet.paste(card, (x, y))
-          sheet.save('streetview-headings.jpg', quality=90)
-          PY
-
-      - name: Upload panorama research
+      - name: Upload comparison
         uses: actions/upload-artifact@v4
         with:
-          name: streetview-panorama-research
-          path: |
-            resolved-panorama.txt
-            streetview-headings.jpg
+          name: streetview-heading-grid
+          path: streetview-headings.png
           if-no-files-found: error
           retention-days: 2
