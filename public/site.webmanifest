@@ -1,7 +1,7 @@
 {
-  "name": "Montclair Smoke Shop — Interactive Concept",
-  "short_name": "Signal 127",
-  "description": "An independent interactive concept for Montclair Smoke Shop.",
+  "name": "Montclair Smoke Shop — Website Demo",
+  "short_name": "Montclair Shop",
+  "description": "An independent demo with sample categories, store hours, phone, map, and directions.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
