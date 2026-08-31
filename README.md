@@ -1,36 +1,34 @@
 # MONTCLAIR // SIGNAL
 
-A cinematic, frontend-only concept website for **Montclair Smoke Shop** in Montclair, New Jersey.
+An interactive, frontend-only demo website for **Montclair Smoke Shop** in Montclair, New Jersey.
 
-The experience combines React, Three.js, accessible HTML, and a local mock catalog to demonstrate how the shop could present itself online without enabling checkout, accounts, or real-time inventory.
+The site uses React, original AI-generated hookah artwork, accessible HTML, and a local sample catalog. It does not enable checkout, customer accounts, or real-time inventory.
 
 > **Independent concept:** This repository is not the shop's official website. Public business details and demonstration content require owner confirmation before any production launch.
 
 ## Experience
 
-- 21+ access acknowledgment
-- Interactive Three.js hookah showcase with drag and keyboard rotation
-- Four user-controlled concept finishes: **Crystal**, **Chrome**, **Onyx**, and **Iridescent**
-- Two visual atmospheres: **Obsidian** and **Chrome Ember**
-- Reduced-motion mode and non-WebGL fallback
-- Orbital category navigation
-- Searchable, filterable mock product collection
+- 21+ age acknowledgment
+- Image-led hookah hero using original AI-generated artwork
+- Four visual finish treatments: Crystal, Chrome, Onyx, and Iridescent
+- Two color themes: Obsidian and Chrome Ember
+- Reduced-motion support
+- Product category navigation
+- Searchable and filterable sample catalog
 - Product detail drawers
-- Browser-local **Visit List** and counter view
+- Browser-local Visit List and counter view
 - Live open/closed calculation in `America/New_York`
-- Real map centered on the Valley Road shop location
-- Interactive street-level storefront context
-- Direct call and directions actions
-- Responsive mobile action dock
+- Real map, Street View, phone, and directions
+- Responsive mobile navigation
 - No checkout, customer accounts, analytics, or external trackers
 
 ## GitHub Pages
 
-Deployment target:
+Live site:
 
 **https://prithiraj.github.io/montclair-smoke-shop-demo/**
 
-The workflow in `.github/workflows/pages.yml` validates the content, runs tests, builds Vite with the repository base path, and deploys the `dist` directory through the official GitHub Pages actions whenever `main` changes.
+The workflow in `.github/workflows/pages.yml` validates the content, runs tests, builds Vite with the repository base path, and deploys the `dist` directory whenever `main` changes.
 
 ## Public business data used in the demo
 
@@ -43,15 +41,14 @@ The workflow in `.github/workflows/pages.yml` validates the content, runs tests,
 | Email | Not included | No verified public email found |
 | Official logo | Not included | No verified reusable logo asset found |
 
-The interface uses an original concept wordmark and procedural graphics. It does not claim that the concept identity or the displayed hookah finishes are official shop branding or verified inventory.
+The interface uses an original concept wordmark, original AI-generated hookah artwork, and abstract SVG illustrations for sample catalog items. It does not copy a directory image or claim that the concept identity is official.
 
 ## Stack
 
 - React 19
 - Vite 8
-- Three.js
-- React Three Fiber
-- Native CSS animations and transitions
+- Original WebP concept artwork
+- Native CSS animation, parallax, and image transitions
 - Node's built-in test runner
 
 ## Local development
@@ -74,11 +71,11 @@ npm run build
 npm run preview
 ```
 
-`npm run validate` protects important content guardrails, including the absence of invented email/website fields and ecommerce language.
+`npm run validate` protects important content guardrails, including the absence of invented email and website fields or a working checkout.
 
 ## Optional Netlify deployment
 
-The repository retains a `netlify.toml` configuration for a later commercial-host migration:
+The repository retains a `netlify.toml` configuration for a later move to Netlify:
 
 ```text
 Build command: npm run build
@@ -104,12 +101,13 @@ Node version: 22.16.0
 │   └── _redirects
 ├── scripts/validate-content.mjs
 ├── src/
+│   ├── assets/
 │   ├── components/
 │   ├── data/
 │   ├── hooks/
 │   ├── lib/
 │   ├── App.jsx
-│   ├── hookah-redesign.css
+│   ├── image-led-hero.css
 │   ├── main.jsx
 │   └── styles.css
 ├── tests/storeStatus.test.mjs
