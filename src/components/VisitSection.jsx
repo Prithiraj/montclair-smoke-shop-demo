@@ -10,12 +10,12 @@ export function VisitSection({ store, status }) {
     <section className="section section--visit" id="visit" aria-labelledby="visit-title">
       <div className="section-heading reveal">
         <div>
-          <p className="section-kicker">05 // The real destination</p>
-          <h2 id="visit-title">Find the shop, not a placeholder.</h2>
+          <p className="section-kicker">05 // Visit the store</p>
+          <h2 id="visit-title">See the location before you go.</h2>
         </div>
         <p>
-          The concept resolves into useful, recognizable information: a live map, a street-level storefront
-          view, today’s status, direct calling, weekly hours, and turn-by-turn directions.
+          Open the map, view the storefront, check today’s hours, or call the shop before you visit
+          the store at 127 Valley Road.
         </p>
       </div>
 
@@ -64,7 +64,7 @@ export function VisitSection({ store, status }) {
           <div className="location-media__beacon">
             <span className="status-dot status-dot--open status-dot--pulse" />
             <div>
-              <small>{showingStorefront ? 'Street-level view' : 'Map beacon'}</small>
+              <small>{showingStorefront ? 'Street-level view' : 'Store location'}</small>
               <strong>{store.address.street}</strong>
             </div>
           </div>
@@ -87,14 +87,14 @@ export function VisitSection({ store, status }) {
           <div className="visit-status" data-open={status.isOpen}>
             <span className={`status-dot${status.isOpen ? ' status-dot--open status-dot--pulse' : ''}`} />
             <div>
-              <span>Current store signal</span>
+              <span>Today’s status</span>
               <strong>{status.label}</strong>
             </div>
             <small>{status.detail}</small>
           </div>
 
           <div className="visit-address">
-            <span>Destination</span>
+            <span>Address</span>
             <h3>{store.address.street}</h3>
             <p>
               {store.address.city}, {store.address.state} {store.address.postalCode}
@@ -122,10 +122,10 @@ export function VisitSection({ store, status }) {
           </div>
 
           <div className="location-trust-note">
-            <span>Real location feed</span>
+            <span>Map and storefront view</span>
             <p>
-              The map and Street View are supplied by their respective providers. Street-level imagery can
-              predate recent exterior changes.
+              Street View may be older than the current storefront. Open the full map for the latest provider
+              information.
             </p>
           </div>
 
