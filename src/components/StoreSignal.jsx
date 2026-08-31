@@ -4,13 +4,13 @@ export function StoreSignal({ store, status }) {
       <div className="store-signal__status">
         <span className={`status-dot${status.isOpen ? ' status-dot--open status-dot--pulse' : ''}`} />
         <div>
-          <span className="store-signal__label">Store signal</span>
+          <span className="store-signal__label">Today</span>
           <strong>{status.label}</strong>
         </div>
         <span className="store-signal__detail">{status.detail}</span>
       </div>
       <div className="store-signal__location">
-        <span className="store-signal__label">Location</span>
+        <span className="store-signal__label">Address</span>
         <strong>{store.address.street}</strong>
         <span>
           {store.address.city}, {store.address.state}
