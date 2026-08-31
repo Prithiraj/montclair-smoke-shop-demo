@@ -12,7 +12,7 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Checkout
@@ -22,7 +22,7 @@ jobs:
         run: |
           python3 -m pip install --disable-pip-version-check --quiet streetlevel py360convert pillow numpy
 
-      - name: Download panorama and build heading sheet
+      - name: Download panorama and create storefront crops
         shell: bash
         run: |
           set -euo pipefail
@@ -31,7 +31,7 @@ jobs:
 
           import numpy as np
           import py360convert
-          from PIL import Image, ImageDraw
+          from PIL import Image, ImageDraw, ImageEnhance
           from streetlevel import streetview
 
           PANO_ID = 'DQsmIN4XXa6V3eOitOKiDQ'
@@ -40,45 +40,49 @@ jobs:
               raise SystemExit('Panorama not found')
 
           print('PANO_METADATA', pano)
-          image = streetview.get_panorama(pano, zoom=3).convert('RGB')
-          image.save('streetview-panorama.jpg', quality=88)
+          image = streetview.get_panorama(pano, zoom=4).convert('RGB')
           Path('streetview-metadata.txt').write_text(repr(pano) + '\n')
-
           source = np.asarray(image)
-          headings = list(range(0, 360, 15))
-          card_width = 480
-          image_height = 300
-          label_height = 36
+
+          output = Path('storefront-crops')
+          output.mkdir(exist_ok=True)
+          headings = (122, 128, 134, 140, 146, 152, 158, 164, 170, 176)
           cards = []
 
           for heading in headings:
               perspective = py360convert.e2p(
                   source,
-                  fov_deg=(72, 48),
+                  fov_deg=(34, 25),
                   u_deg=heading,
-                  v_deg=-2,
-                  out_hw=(image_height, card_width),
+                  v_deg=-1.5,
+                  out_hw=(1050, 1400),
               )
-              card = Image.new('RGB', (card_width, image_height + label_height), '#050609')
-              card.paste(Image.fromarray(perspective.astype(np.uint8)), (0, label_height))
+              crop = Image.fromarray(perspective.astype(np.uint8))
+              crop = ImageEnhance.Contrast(crop).enhance(1.08)
+              crop = ImageEnhance.Sharpness(crop).enhance(1.35)
+              crop.save(output / f'heading-{heading}.jpg', quality=94)
+
+              thumb = crop.resize((700, 525), Image.Resampling.LANCZOS)
+              card = Image.new('RGB', (700, 566), '#050609')
+              card.paste(thumb, (0, 41))
               draw = ImageDraw.Draw(card)
-              draw.text((14, 11), f'u={heading} degrees', fill='white')
+              draw.text((16, 13), f'heading {heading} degrees', fill='white')
               cards.append(card)
 
-          cols = 4
+          cols = 2
           rows = (len(cards) + cols - 1) // cols
-          sheet = Image.new('RGB', (cols * card_width, rows * (image_height + label_height)), '#050609')
+          sheet = Image.new('RGB', (cols * 700, rows * 566), '#050609')
           for index, card in enumerate(cards):
-              sheet.paste(card, ((index % cols) * card_width, (index // cols) * (image_height + label_height)))
-          sheet.save('streetview-heading-sheet.jpg', quality=91)
+              sheet.paste(card, ((index % cols) * 700, (index // cols) * 566))
+          sheet.save('storefront-crops/contact-sheet.jpg', quality=92)
           PY
 
       - name: Upload Street View research
         uses: actions/upload-artifact@v4
         with:
-          name: streetview-storefront-research
+          name: streetview-storefront-crops
           path: |
-            streetview-heading-sheet.jpg
+            storefront-crops
             streetview-metadata.txt
           if-no-files-found: error
           retention-days: 1
