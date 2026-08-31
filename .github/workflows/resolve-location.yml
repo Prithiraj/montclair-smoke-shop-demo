@@ -18,22 +18,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Resolve nearest panorama
+      - name: Resolve nearest panorama and metadata
         id: pano
         shell: bash
         run: |
           set -euo pipefail
           LAT="40.8218887"
           LNG="-74.2198311"
-          PAGE="$(curl -sL -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' \
-            "https://www.google.com/maps/@${LAT},${LNG},3a,75y,0h,90t/data=!3m1!1e1")"
-          PANO_ID="$(printf '%s' "$PAGE" | grep -oE '"[A-Za-z0-9_-]{22}"' | head -1 | tr -d '"')"
+          curl -sL -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' \
+            "https://www.google.com/maps/@${LAT},${LNG},3a,75y,0h,90t/data=!3m1!1e1" \
+            -o /tmp/streetview-page.html
+          PANO_ID="$(grep -oE '"[A-Za-z0-9_-]{22}"' /tmp/streetview-page.html | head -1 | tr -d '"')"
           if [ -z "$PANO_ID" ]; then
             echo "No panorama ID resolved" >&2
             exit 1
           fi
           echo "pano_id=$PANO_ID" >> "$GITHUB_OUTPUT"
           echo "Resolved panorama: $PANO_ID"
+
+          PANO_ID="$PANO_ID" python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          text = Path('/tmp/streetview-page.html').read_text(errors='ignore')
+          pano = os.environ['PANO_ID']
+          index = text.find(pano)
+          context = text[max(0, index - 2500): index + 5000]
+          print('PANORAMA_CONTEXT_BEGIN')
+          print(context)
+          print('PANORAMA_CONTEXT_END')
+          floats = re.findall(r'-?\d{1,3}\.\d{5,}', context)
+          print('NEARBY_FLOATS=' + ','.join(floats[:80]))
+          PY
 
       - name: Build heading comparison page
         shell: bash
@@ -79,7 +96,7 @@ jobs:
             exit 1
           fi
           "$BROWSER" --headless=new --no-sandbox --disable-dev-shm-usage \
-            --window-size=1600,1200 --virtual-time-budget=12000 \
+            --window-size=1600,1200 --virtual-time-budget=16000 \
             --screenshot=streetview-headings.png http://127.0.0.1:8000/streetview-grid.html
 
       - name: Upload comparison
