@@ -1,0 +1,114 @@
+name: One-time Netlify preview deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/netlify-deploy.trigger"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Validate, test, and build
+        run: |
+          npm run validate
+          npm test
+          npm run build
+
+      - name: Deploy anonymously to Netlify
+        id: deploy
+        shell: bash
+        env:
+          CI: "true"
+          NETLIFY_AUTH_TOKEN: ""
+          NETLIFY_SITE_ID: ""
+        run: |
+          set -euo pipefail
+          if ! npx --yes netlify-cli@latest deploy \
+            --allow-anonymous \
+            --created-via chatgpt \
+            --dir dist \
+            --no-build \
+            --json \
+            > /tmp/netlify-deploy.json \
+            2> /tmp/netlify-deploy.stderr; then
+            cat /tmp/netlify-deploy.stderr
+            exit 1
+          fi
+
+          node <<'NODE'
+          const fs = require('node:fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/netlify-deploy.json', 'utf8'));
+          for (const key of ['claim_url', 'claim_command']) {
+            if (typeof data[key] === 'string' && data[key]) {
+              console.log(`::add-mask::${data[key]}`);
+            }
+          }
+          if (!data.site_url || !data.claim_url || !data.site_id) {
+            throw new Error('Netlify anonymous deployment returned incomplete metadata.');
+          }
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Netlify preview is live\n\n${data.site_url}\n`);
+          console.log(`Netlify preview deployed: ${data.site_url}`);
+          NODE
+
+      - name: Encrypt claim metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/deploy-public.pem <<'PUBLIC_KEY'
+          -----BEGIN PUBLIC KEY-----
+          MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAvZaD7JBLbzgXnKmJvfpF
+          2stvq76R11zGYJJEgJNPrmDrIsmN4fjlSuSNVldHw2MskU29+EgBEJpGoU6+/lPg
+          bLNonM/tu6Kichtd/5HB+6acuaPbQm7xoe+qkQPJGSYFHwdMF0eCLUQO3IzU2Lam
+          Iaesz7un54Z7NiQlIDFwjlpzr4pR6ExR+XC5WApIEjpf7SPVDYyzMp1jv/nbaS3i
+          yq+XkmW1wQ4zd0vlH9SuxUy+0G+NPFTiNQUX9eGLZWQrph13Xe40aqZQGJkaweew
+          GWttkuB3UNUJzbgREmNiw9epYCji37/geifFmqZGZAAfjjYs8dB9+vFkpOi6N+5U
+          choNCgMn+hvByzT8fWGydaPIZBKraaZwsiXJeJoHKerM66pZAwPpQ19GOP03sW9R
+          gfHTtVdhT0c1gJ/s+axud3JMvhkcnA2SB4n9DKbobNyB8zhxafwj48rprRgb/yV8
+          9xCg3dyEiC5HrBtbiWzR7GNh/WVLix3QjuS5sDKvmRyuxnLfwyDcYYlLDLIaSS4g
+          ZHA30MNGvahri4haNhuqjlErYQhAlo1teDSl2FuLDzpy8rmAqEVUVWMlTJ08KnuE
+          dSeVceb1ZBx8fpHlN3cVWr2jKRuSMBRAvIV14Rk55NCD/fRAxrgB6Dy1+Cng20jZ
+          ePk50g9Y+e0AkNKgn9OB3V0CAwEAAQ==
+          -----END PUBLIC KEY-----
+          PUBLIC_KEY
+
+          mkdir -p secure-netlify-deploy
+          openssl rand -hex 32 > /tmp/deployment-passphrase
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -in /tmp/netlify-deploy.json \
+            -out secure-netlify-deploy/deployment.enc \
+            -pass file:/tmp/deployment-passphrase
+          openssl pkeyutl -encrypt \
+            -pubin \
+            -inkey /tmp/deploy-public.pem \
+            -in /tmp/deployment-passphrase \
+            -out secure-netlify-deploy/key.enc \
+            -pkeyopt rsa_padding_mode:oaep \
+            -pkeyopt rsa_oaep_md:sha256
+          rm -f /tmp/netlify-deploy.json /tmp/deployment-passphrase /tmp/deploy-public.pem
+
+      - name: Upload encrypted claim metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: secure-netlify-claim
+          path: secure-netlify-deploy
+          if-no-files-found: error
+          retention-days: 1
