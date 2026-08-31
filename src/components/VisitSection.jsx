@@ -1,39 +1,86 @@
+import { useState } from 'react';
 import { getHoursRows } from '../lib/storeStatus.js';
 
 export function VisitSection({ store, status }) {
   const hours = getHoursRows(store);
+  const [locationView, setLocationView] = useState('map');
+  const showingStorefront = locationView === 'storefront';
 
   return (
     <section className="section section--visit" id="visit" aria-labelledby="visit-title">
       <div className="section-heading reveal">
         <div>
-          <p className="section-kicker">05 // Navigate to Montclair</p>
-          <h2 id="visit-title">Follow the signal home.</h2>
+          <p className="section-kicker">05 // The real destination</p>
+          <h2 id="visit-title">Find the shop, not a placeholder.</h2>
         </div>
         <p>
-          The experience resolves into a practical destination: today’s status, direct calling, weekly hours, and turn-by-turn directions.
+          The concept resolves into useful, recognizable information: a live map, a street-level storefront
+          view, today’s status, direct calling, weekly hours, and turn-by-turn directions.
         </p>
       </div>
 
-      <div className="visit-console glass-panel reveal">
-        <div className="route-map" aria-hidden="true">
-          <div className="route-map__grid" />
-          <div className="route-map__scan" />
-          <svg viewBox="0 0 760 520" preserveAspectRatio="none">
-            <path className="route-map__road" d="M-40 430C110 390 120 265 270 272s144-126 286-117 132-106 244-82" />
-            <path className="route-map__road route-map__road--secondary" d="M78 540c52-182 214-124 238-304S484 38 612-40" />
-            <path className="route-map__signal" d="M40 454C174 407 134 300 293 294s139-113 275-116 116-74 177-99" />
-          </svg>
-          <div className="route-map__origin">
-            <span />
-            <small>You</small>
+      <div className="visit-console visit-console--real-location glass-panel reveal">
+        <div className="location-media">
+          <div className="location-media__switcher" role="group" aria-label="Location view">
+            <button
+              type="button"
+              className={showingStorefront ? '' : 'is-active'}
+              aria-pressed={!showingStorefront}
+              onClick={() => setLocationView('map')}
+            >
+              Live map
+            </button>
+            <button
+              type="button"
+              className={showingStorefront ? 'is-active' : ''}
+              aria-pressed={showingStorefront}
+              onClick={() => setLocationView('storefront')}
+            >
+              Storefront
+            </button>
           </div>
-          <div className="route-map__beacon">
-            <i />
-            <span>SIGNAL 127</span>
-            <strong>{store.address.street}</strong>
+
+          <div className={`location-media__frame location-media__frame--map${showingStorefront ? '' : ' is-active'}`}>
+            <iframe
+              title={`Map showing ${store.publicName} at ${store.address.formatted}`}
+              src={store.location.mapEmbedUrl}
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
           </div>
-          <div className="route-map__coordinates">40.8259° N // 74.2090° W</div>
+
+          <div className={`location-media__frame location-media__frame--storefront${showingStorefront ? ' is-active' : ''}`}>
+            <iframe
+              title={`Street-level storefront view near ${store.publicName}`}
+              src={store.location.streetViewEmbedUrl}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+
+          <div className="location-media__veil" aria-hidden="true" />
+
+          <div className="location-media__beacon">
+            <span className="status-dot status-dot--open status-dot--pulse" />
+            <div>
+              <small>{showingStorefront ? 'Street-level view' : 'Map beacon'}</small>
+              <strong>{store.address.street}</strong>
+            </div>
+          </div>
+
+          <div className="location-media__coordinates">
+            {store.location.latitude.toFixed(4)}° N // {Math.abs(store.location.longitude).toFixed(4)}° W
+          </div>
+
+          <a
+            className="location-media__external"
+            href={showingStorefront ? store.location.streetViewUrl : store.mapSearchUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open {showingStorefront ? 'Street View' : 'full map'} ↗
+          </a>
         </div>
 
         <div className="visit-console__panel">
@@ -74,8 +121,17 @@ export function VisitSection({ store, status }) {
             ))}
           </div>
 
+          <div className="location-trust-note">
+            <span>Real location feed</span>
+            <p>
+              The map and Street View are supplied by their respective providers. Street-level imagery can
+              predate recent exterior changes.
+            </p>
+          </div>
+
           <p className="verification-note">
-            Hours are based on current public listings and should be confirmed directly with the store, especially on holidays.
+            Hours are based on current public listings and should be confirmed directly with the store,
+            especially on holidays.
           </p>
         </div>
       </div>

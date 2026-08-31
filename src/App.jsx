@@ -4,10 +4,10 @@ import { BootSequence } from './components/BootSequence.jsx';
 import { CategoryOrbit } from './components/CategoryOrbit.jsx';
 import { CommunitySignal } from './components/CommunitySignal.jsx';
 import { Footer } from './components/Footer.jsx';
+import { HookahScene } from './components/HookahScene.jsx';
 import { MobileDock } from './components/MobileDock.jsx';
 import { Navigation } from './components/Navigation.jsx';
 import { ProductExplorer } from './components/ProductExplorer.jsx';
-import { SignalScene } from './components/SignalScene.jsx';
 import { StoreSignal } from './components/StoreSignal.jsx';
 import { VisitList } from './components/VisitList.jsx';
 import { VisitSection } from './components/VisitSection.jsx';
@@ -21,6 +21,33 @@ const STORAGE_KEYS = {
   visitList: 'montclair-signal-visit-list',
   age: 'montclair-signal-age-ack',
 };
+
+const HOOKAH_FINISHES = [
+  {
+    id: 'crystal',
+    shortLabel: 'Crystal',
+    label: 'Crystal glass study',
+    note: 'Clear, luminous, precise',
+  },
+  {
+    id: 'chrome',
+    shortLabel: 'Chrome',
+    label: 'Polished chrome study',
+    note: 'Reflective, architectural, clean',
+  },
+  {
+    id: 'onyx',
+    shortLabel: 'Onyx',
+    label: 'Matte onyx study',
+    note: 'Dark, quiet, sculptural',
+  },
+  {
+    id: 'iridescent',
+    shortLabel: 'Iridescent',
+    label: 'Iridescent study',
+    note: 'Reactive color, futuristic glow',
+  },
+];
 
 function readLocal(key, fallback) {
   try {
@@ -64,7 +91,10 @@ export default function App() {
   const [visitList, setVisitList] = useState(initialVisitList);
   const [visitListOpen, setVisitListOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [hookahMaterial, setHookahMaterial] = useState('crystal');
+  const [hookahRotation, setHookahRotation] = useState(-0.18);
   const bootTimer = useRef(null);
+  const hookahDrag = useRef(null);
   const status = useStoreStatus(store);
 
   const activeAccent = useMemo(() => {
@@ -72,6 +102,11 @@ export default function App() {
     if (active) return active.accent;
     return theme === 'ember' ? '#ffb66e' : '#63f5f2';
   }, [activeCategory, theme]);
+
+  const activeFinish = useMemo(
+    () => HOOKAH_FINISHES.find((finish) => finish.id === hookahMaterial) || HOOKAH_FINISHES[0],
+    [hookahMaterial],
+  );
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -173,6 +208,41 @@ export default function App() {
     );
   };
 
+  const startHookahDrag = (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    hookahDrag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startRotation: hookahRotation,
+    };
+  };
+
+  const moveHookahDrag = (event) => {
+    const drag = hookahDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const delta = event.clientX - drag.startX;
+    setHookahRotation(drag.startRotation + delta * 0.012);
+  };
+
+  const endHookahDrag = (event) => {
+    const drag = hookahDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    hookahDrag.current = null;
+  };
+
+  const rotateHookahWithKeyboard = (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      setHookahRotation((value) => value - 0.22);
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      setHookahRotation((value) => value + 0.22);
+    }
+  };
+
   return (
     <div className="app-shell" id="top">
       <div className="scroll-progress" aria-hidden="true">
@@ -180,7 +250,13 @@ export default function App() {
       </div>
       <div className="ambient-field" aria-hidden="true" />
       <div className="site-vignette" aria-hidden="true" />
-      <SignalScene accent={activeAccent} scrollProgress={scrollProgress} reduceMotion={reduceMotion} />
+      <HookahScene
+        accent={activeAccent}
+        materialMode={hookahMaterial}
+        rotation={hookahRotation}
+        scrollProgress={scrollProgress}
+        reduceMotion={reduceMotion}
+      />
 
       <AgePortal visible={!ageAccepted} onEnter={enterExperience} />
       <BootSequence visible={booting} />
@@ -197,26 +273,29 @@ export default function App() {
         />
 
         <main>
-          <section className="hero" aria-labelledby="hero-title">
+          <section className="hero hero--hookah" aria-labelledby="hero-title">
             <div className="hero__grid" aria-hidden="true" />
-            <div className="hero__watermark" aria-hidden="true">127</div>
+            <div className="hero__watermark" aria-hidden="true">360</div>
+
             <div className="hero__content">
               <p className="section-kicker hero__kicker">
-                <span className="status-dot status-dot--open status-dot--pulse" /> Montclair, New Jersey // Online
+                <span className={`status-dot${status.isOpen ? ' status-dot--open status-dot--pulse' : ''}`} />
+                {status.label} // Montclair, New Jersey
               </p>
               <h1 id="hero-title">
-                <span>Your local shop.</span>
-                <span className="gradient-text">A new frequency.</span>
+                <span>Montclair,</span>
+                <span className="gradient-text">elevated.</span>
               </h1>
               <p className="hero__lede">
-                Premium smoke and lifestyle accessories, reframed as a cinematic digital showroom—with zero clutter and no online checkout.
+                A cinematic preview of your local shop—browse the collection, assemble a private visit list,
+                then call or navigate directly to Valley Road.
               </p>
               <div className="hero__actions">
                 <a className="button button--primary" href="#explore">
-                  Explore the store <span aria-hidden="true">↘</span>
+                  Explore the collection <span aria-hidden="true">↘</span>
                 </a>
                 <a className="button button--ghost" href="#visit">
-                  Plan your visit
+                  See the real location
                 </a>
               </div>
               <div className="hero__protocols" aria-label="Experience characteristics">
@@ -226,16 +305,58 @@ export default function App() {
               </div>
             </div>
 
-            <div className="hero__artifact-label" aria-hidden="true">
-              <span>OBJECT // 001</span>
-              <strong>Signal Core</strong>
-              <small>Reactive spatial identity</small>
+            <div className="hero__artifact-label hero__artifact-label--hookah">
+              <span>OBJECT // 360° STUDY</span>
+              <strong>Hookah material lab</strong>
+              <small>Drag to rotate · select a concept finish</small>
+            </div>
+
+            <div
+              className="hero__hookah-interaction"
+              role="group"
+              aria-label="Interactive hookah. Drag horizontally or use the left and right arrow keys to rotate."
+              tabIndex="0"
+              onPointerDown={startHookahDrag}
+              onPointerMove={moveHookahDrag}
+              onPointerUp={endHookahDrag}
+              onPointerCancel={endHookahDrag}
+              onLostPointerCapture={() => {
+                hookahDrag.current = null;
+              }}
+              onKeyDown={rotateHookahWithKeyboard}
+            >
+              <span className="hero__drag-cue" aria-hidden="true">
+                <i>←</i> Drag to rotate <i>→</i>
+              </span>
+            </div>
+
+            <div className="hookah-materials glass-panel" aria-label="Hookah concept finish">
+              <div className="hookah-materials__heading">
+                <span>Concept finish</span>
+                <strong>{activeFinish.label}</strong>
+                <small>{activeFinish.note}</small>
+              </div>
+              <div className="hookah-materials__options">
+                {HOOKAH_FINISHES.map((finish) => (
+                  <button
+                    key={finish.id}
+                    type="button"
+                    className={hookahMaterial === finish.id ? 'is-active' : ''}
+                    aria-pressed={hookahMaterial === finish.id}
+                    onClick={() => setHookahMaterial(finish.id)}
+                  >
+                    <i aria-hidden="true" data-finish={finish.id} />
+                    <span>{finish.shortLabel}</span>
+                  </button>
+                ))}
+              </div>
+              <p>Visual study only — not a claim about current store inventory.</p>
             </div>
 
             <StoreSignal store={store} status={status} />
 
             <a className="hero__scroll-cue" href="#channels" aria-label="Continue to collection channels">
-              <span>Scroll to tune</span>
+              <span>Scroll to browse</span>
               <i aria-hidden="true" />
             </a>
           </section>
