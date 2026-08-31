@@ -2,7 +2,7 @@ name: Verify production build
 
 on:
   push:
-    branches: [main, "build/**", "design/**"]
+    branches: [main, "build/**", "design/**", "redesign/**"]
   pull_request:
     branches: [main]
 
