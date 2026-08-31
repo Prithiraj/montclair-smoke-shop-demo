@@ -3,13 +3,13 @@ const signals = [
     index: '01',
     label: 'Selection',
     title: 'Broad local variety',
-    copy: 'Public reviews frequently mention a wide selection and consistent stock.',
+    copy: 'Public reviews often mention a wide selection and reliable stock.',
   },
   {
     index: '02',
-    label: 'Speed',
-    title: 'Quick counter visits',
-    copy: 'Several public reviews describe fast, convenient visits for regular purchases.',
+    label: 'Convenience',
+    title: 'Quick in-store visits',
+    copy: 'Several public reviews describe the shop as fast and convenient for regular purchases.',
   },
   {
     index: '03',
@@ -21,7 +21,7 @@ const signals = [
     index: '04',
     label: 'Value',
     title: 'Competitive local pricing',
-    copy: 'Value and reasonable pricing are recurring themes, pending owner confirmation.',
+    copy: 'Reasonable pricing is a recurring review theme, pending confirmation from the owner.',
   },
 ];
 
@@ -30,11 +30,12 @@ export function CommunitySignal() {
     <section className="section section--community" aria-labelledby="community-title">
       <div className="section-heading reveal">
         <div>
-          <p className="section-kicker">04 // Community signal</p>
-          <h2 id="community-title">Known locally. Reframed digitally.</h2>
+          <p className="section-kicker">04 // What customers mention</p>
+          <h2 id="community-title">Helpful service and a broad selection.</h2>
         </div>
         <p>
-          The concept translates recurring public-review themes into a restrained reputation system without fabricating testimonials.
+          These themes appear often in public reviews. The owner should verify every business claim before
+          the site becomes official.
         </p>
       </div>
 
@@ -51,7 +52,7 @@ export function CommunitySignal() {
           </article>
         ))}
       </div>
-      <p className="source-note reveal">Public-listing themes only. Exact claims and quotations require owner approval.</p>
+      <p className="source-note reveal">Based on public-review themes. Exact claims require owner approval.</p>
     </section>
   );
 }
