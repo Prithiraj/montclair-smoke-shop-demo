@@ -1,0 +1,17 @@
+{
+  "name": "Montclair Smoke Shop — Interactive Concept",
+  "short_name": "Signal 127",
+  "description": "An independent interactive concept for Montclair Smoke Shop.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050609",
+  "theme_color": "#050609",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

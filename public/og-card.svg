@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg" cx="76%" cy="35%" r="80%">
+      <stop offset="0" stop-color="#142733"/>
+      <stop offset=".42" stop-color="#080b11"/>
+      <stop offset="1" stop-color="#020305"/>
+    </radialGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#63f5f2"/>
+      <stop offset=".52" stop-color="#f3f7fa"/>
+      <stop offset="1" stop-color="#9b6cff"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#b2e6f0" stroke-opacity=".055"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <g transform="translate(870 315)" fill="none" stroke="url(#line)" filter="url(#glow)">
+    <ellipse rx="205" ry="105" transform="rotate(20)" stroke-width="2" opacity=".55"/>
+    <ellipse rx="130" ry="220" transform="rotate(-38)" stroke-width="2" opacity=".45"/>
+    <circle r="88" stroke-width="2" stroke-dasharray="8 10" opacity=".75"/>
+    <path d="M0-74 65-34 58 45 0 82-70 35-58-45Z" stroke-width="4"/>
+    <circle r="13" fill="#63f5f2" stroke="none"/>
+  </g>
+  <g fill="#f3f7fa" font-family="Arial, Helvetica, sans-serif">
+    <text x="90" y="105" font-size="19" letter-spacing="6" fill="#63f5f2">INDEPENDENT CONCEPT // SIGNAL 127</text>
+    <text x="90" y="265" font-size="92" font-weight="700" letter-spacing="-3">MONTCLAIR</text>
+    <text x="94" y="325" font-size="32" letter-spacing="14" fill="#bcc4cf">SMOKE SHOP</text>
+    <text x="92" y="430" font-size="28" fill="#bcc4cf">Your local shop. A new frequency.</text>
+    <text x="92" y="515" font-size="17" letter-spacing="3" fill="#9199a6">127 VALLEY ROAD · MONTCLAIR, NEW JERSEY</text>
+  </g>
+  <path d="M90 558h1020" stroke="url(#line)" stroke-opacity=".35"/>
+</svg>
