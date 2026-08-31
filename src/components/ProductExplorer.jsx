@@ -108,7 +108,7 @@ function ProductDrawer({ product, categoryLabel, selected, onToggle, onClose, st
         </div>
 
         <div className="product-drawer__content">
-          <p className="section-kicker">{categoryLabel} // Concept item</p>
+          <p className="section-kicker">{categoryLabel} // Sample item</p>
           <h3 id="product-drawer-title">{product.name}</h3>
           <p className="product-drawer__tagline">{product.tagline}</p>
           <p>{product.description}</p>
@@ -118,7 +118,7 @@ function ProductDrawer({ product, categoryLabel, selected, onToggle, onClose, st
             ))}
           </ul>
           <div className="product-drawer__notice">
-            This catalog is a design demonstration. Price, inventory, variants, and availability are not represented.
+            This is a design sample. Prices, stock, variants, and availability are not shown.
           </div>
           <div className="product-drawer__actions">
             <button className="button button--primary" type="button" onClick={() => onToggle(product.id)}>
@@ -169,25 +169,25 @@ export function ProductExplorer({
     <section className="section section--explore" id="explore" aria-labelledby="explore-title">
       <div className="section-heading reveal">
         <div>
-          <p className="section-kicker">03 // Digital shelf</p>
-          <h2 id="explore-title">Explore the collection.</h2>
+          <p className="section-kicker">03 // Featured items</p>
+          <h2 id="explore-title">Browse the sample catalog.</h2>
         </div>
         <p>
-          Search and filter a mock catalog, then create a private Visit List to show at the counter. No checkout is enabled.
+          Search the sample catalog and save items you want to ask about in store. This demo does not show prices, stock, or checkout.
         </p>
       </div>
 
       <div className="catalog-console glass-panel reveal">
         <label className="command-search">
           <span className="command-search__prefix" aria-hidden="true">/</span>
-          <span className="sr-only">Search concept catalog</span>
+          <span className="sr-only">Search sample catalog</span>
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search the collection"
+            placeholder="Search sample items"
           />
-          <span className="command-search__hint">LOCAL DATA</span>
+          <span className="command-search__hint">DEMO DATA</span>
         </label>
 
         <div className="channel-filter" role="group" aria-label="Filter by category">
@@ -214,8 +214,8 @@ export function ProductExplorer({
         </div>
 
         <div className="catalog-console__readout">
-          <span>{String(filteredProducts.length).padStart(2, '0')} signals found</span>
-          <span>{visitList.length} saved locally</span>
+          <span>{String(filteredProducts.length).padStart(2, '0')} items shown</span>
+          <span>{visitList.length} saved for your visit</span>
         </div>
       </div>
 
@@ -234,8 +234,8 @@ export function ProductExplorer({
         </div>
       ) : (
         <div className="empty-state glass-panel reveal">
-          <span>NO SIGNAL</span>
-          <h3>No concept items match that search.</h3>
+          <span>NO MATCHES</span>
+          <h3>No sample items match that search.</h3>
           <button
             className="button button--ghost"
             type="button"
