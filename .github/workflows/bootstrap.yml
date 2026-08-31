@@ -27,8 +27,9 @@ jobs:
         run: |
           set -euo pipefail
           cat .bootstrap/part-* > /tmp/project.tar.gz.b64
-          echo "6fe18583c61edf42d5d0d7ff495e5e38275d1e150b95f70659fe97071838d18e  /tmp/project.tar.gz.b64" | sha256sum -c -
-          base64 --decode /tmp/project.tar.gz.b64 | tar --no-same-owner -xzf -
+          base64 --decode /tmp/project.tar.gz.b64 > /tmp/project.tar.gz
+          echo "14ef0caded8ff77e44c63f4a6146a382d9c2242904c2c02ff623f12e8e042ce0  /tmp/project.tar.gz" | sha256sum -c -
+          tar --no-same-owner -xzf /tmp/project.tar.gz
           rm -rf .bootstrap
           rm -f .github/workflows/ci.yml
 
