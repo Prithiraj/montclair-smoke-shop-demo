@@ -28,17 +28,17 @@ export function AgePortal({ visible, onEnter }) {
 
       <section className="age-card">
         <div className="age-card__eyebrow">
-          <span className="status-dot status-dot--pulse" /> Adult access protocol
+          <span className="status-dot status-dot--pulse" /> Age requirement
         </div>
         <Logo />
 
         {!declined ? (
           <>
             <div className="age-card__copy">
-              <p className="age-card__index">ENTRY // 21+</p>
-              <h1 id="age-title">Confirm adult access.</h1>
+              <p className="age-card__index">21+ ONLY</p>
+              <h1 id="age-title">Are you 21 or older?</h1>
               <p>
-                This independent concept experience is intended for adults 21 and older. It does not process purchases or verify identity.
+                This demo is intended for adults 21 and older. It does not sell products or verify identity.
               </p>
             </div>
             <div className="age-card__actions">
@@ -48,7 +48,7 @@ export function AgePortal({ visible, onEnter }) {
                 type="button"
                 onClick={onEnter}
               >
-                <span>I am 21+ — enter</span>
+                <span>Yes, I am 21 or older</span>
                 <span aria-hidden="true">↗</span>
               </button>
               <button
@@ -56,28 +56,28 @@ export function AgePortal({ visible, onEnter }) {
                 type="button"
                 onClick={() => setDeclined(true)}
               >
-                Exit experience
+                No, leave this page
               </button>
             </div>
           </>
         ) : (
           <div className="age-card__copy age-card__copy--declined">
-            <p className="age-card__index">ACCESS // PAUSED</p>
-            <h1>Experience closed.</h1>
-            <p>No store content has been unlocked on this device.</p>
+            <p className="age-card__index">21+ REQUIRED</p>
+            <h1>Age requirement not met.</h1>
+            <p>The shop content remains hidden.</p>
             <button
               ref={enterRef}
               className="button button--ghost button--wide"
               type="button"
               onClick={() => setDeclined(false)}
             >
-              Return to confirmation
+              Return to age confirmation
             </button>
           </div>
         )}
 
         <p className="age-card__legal">
-          Concept presentation only. In-store age verification and all applicable laws still apply.
+          In-store identification and all applicable laws still apply.
         </p>
       </section>
     </div>
