@@ -1,0 +1,27 @@
+{
+  "name": "montclair-smoke-shop-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MONTCLAIR // SIGNAL — an interactive concept website for Montclair Smoke Shop.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test",
+    "validate": "node scripts/validate-content.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.7.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.2.2"
+  }
+}

@@ -1,0 +1,41 @@
+@media (max-width: 700px) {
+  .hero {
+    display: block;
+    min-height: 0;
+    padding-top: 9.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .hero__artifact-label {
+    display: none;
+  }
+
+  .hero__watermark {
+    top: 32rem;
+    right: -4rem;
+    bottom: auto;
+  }
+
+  .store-signal {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    grid-template-columns: 1fr;
+    margin-top: 3rem;
+  }
+
+  .store-signal__links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .hero {
+    min-height: 0;
+  }
+
+  .store-signal__links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
