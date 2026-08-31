@@ -32,6 +32,20 @@ jobs:
           tar --no-same-owner -xzf /tmp/project.tar.gz
           rm -rf .bootstrap
           rm -f .github/workflows/ci.yml
+          cat > vite.config.js <<'VITE_CONFIG'
+          import { defineConfig } from 'vite';
+          import react from '@vitejs/plugin-react';
+
+          export default defineConfig({
+            plugins: [react()],
+            build: {
+              target: 'es2022',
+              cssCodeSplit: true,
+              sourcemap: false,
+              chunkSizeWarningLimit: 900,
+            },
+          });
+          VITE_CONFIG
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
