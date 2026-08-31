@@ -26,26 +26,26 @@ const HOOKAH_FINISHES = [
   {
     id: 'crystal',
     shortLabel: 'Crystal',
-    label: 'Crystal glass study',
-    note: 'Clear, luminous, precise',
+    label: 'Crystal finish',
+    note: 'Cool glass and silver',
   },
   {
     id: 'chrome',
     shortLabel: 'Chrome',
-    label: 'Polished chrome study',
-    note: 'Reflective, architectural, clean',
+    label: 'Chrome finish',
+    note: 'Polished metal and neutral light',
   },
   {
     id: 'onyx',
     shortLabel: 'Onyx',
-    label: 'Matte onyx study',
-    note: 'Dark, quiet, sculptural',
+    label: 'Onyx finish',
+    note: 'Dark metal and warm light',
   },
   {
     id: 'iridescent',
     shortLabel: 'Iridescent',
-    label: 'Iridescent study',
-    note: 'Reactive color, futuristic glow',
+    label: 'Iridescent finish',
+    note: 'Cyan and magenta glow',
   },
 ];
 
@@ -92,16 +92,8 @@ export default function App() {
   const [visitListOpen, setVisitListOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hookahMaterial, setHookahMaterial] = useState('crystal');
-  const [hookahRotation, setHookahRotation] = useState(-0.18);
   const bootTimer = useRef(null);
-  const hookahDrag = useRef(null);
   const status = useStoreStatus(store);
-
-  const activeAccent = useMemo(() => {
-    const active = categories.find((category) => category.id === activeCategory);
-    if (active) return active.accent;
-    return theme === 'ember' ? '#ffb66e' : '#63f5f2';
-  }, [activeCategory, theme]);
 
   const activeFinish = useMemo(
     () => HOOKAH_FINISHES.find((finish) => finish.id === hookahMaterial) || HOOKAH_FINISHES[0],
@@ -208,41 +200,6 @@ export default function App() {
     );
   };
 
-  const startHookahDrag = (event) => {
-    if (event.button !== undefined && event.button !== 0) return;
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-    hookahDrag.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startRotation: hookahRotation,
-    };
-  };
-
-  const moveHookahDrag = (event) => {
-    const drag = hookahDrag.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const delta = event.clientX - drag.startX;
-    setHookahRotation(drag.startRotation + delta * 0.012);
-  };
-
-  const endHookahDrag = (event) => {
-    const drag = hookahDrag.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
-    hookahDrag.current = null;
-  };
-
-  const rotateHookahWithKeyboard = (event) => {
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      setHookahRotation((value) => value - 0.22);
-    }
-    if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      setHookahRotation((value) => value + 0.22);
-    }
-  };
-
   return (
     <div className="app-shell" id="top">
       <div className="scroll-progress" aria-hidden="true">
@@ -251,9 +208,7 @@ export default function App() {
       <div className="ambient-field" aria-hidden="true" />
       <div className="site-vignette" aria-hidden="true" />
       <HookahScene
-        accent={activeAccent}
         materialMode={hookahMaterial}
-        rotation={hookahRotation}
         scrollProgress={scrollProgress}
         reduceMotion={reduceMotion}
       />
@@ -283,56 +238,37 @@ export default function App() {
                 {status.label} // Montclair, New Jersey
               </p>
               <h1 id="hero-title">
-                <span>Montclair,</span>
-                <span className="gradient-text">elevated.</span>
+                <span>Explore before</span>
+                <span className="gradient-text">you visit.</span>
               </h1>
               <p className="hero__lede">
-                A cinematic preview of your local shop—browse the collection, assemble a private visit list,
-                then call or navigate directly to Valley Road.
+                Browse featured categories, save items you want to ask about in store, and get directions to
+                127 Valley Road.
               </p>
               <div className="hero__actions">
                 <a className="button button--primary" href="#explore">
-                  Explore the collection <span aria-hidden="true">↘</span>
+                  Browse featured items <span aria-hidden="true">↘</span>
                 </a>
                 <a className="button button--ghost" href="#visit">
-                  See the real location
+                  Get directions
                 </a>
               </div>
-              <div className="hero__protocols" aria-label="Experience characteristics">
-                <span>21+ access</span>
-                <span>Browse only</span>
-                <span>Local visit list</span>
+              <div className="hero__protocols" aria-label="Store information">
+                <span>21+ only</span>
+                <span>In-store purchase</span>
+                <span>Call to confirm</span>
               </div>
             </div>
 
             <div className="hero__artifact-label hero__artifact-label--hookah">
-              <span>OBJECT // 360° STUDY</span>
-              <strong>Hookah material lab</strong>
-              <small>Drag to rotate · select a concept finish</small>
-            </div>
-
-            <div
-              className="hero__hookah-interaction"
-              role="group"
-              aria-label="Interactive hookah. Drag horizontally or use the left and right arrow keys to rotate."
-              tabIndex="0"
-              onPointerDown={startHookahDrag}
-              onPointerMove={moveHookahDrag}
-              onPointerUp={endHookahDrag}
-              onPointerCancel={endHookahDrag}
-              onLostPointerCapture={() => {
-                hookahDrag.current = null;
-              }}
-              onKeyDown={rotateHookahWithKeyboard}
-            >
-              <span className="hero__drag-cue" aria-hidden="true">
-                <i>←</i> Drag to rotate <i>→</i>
-              </span>
+              <span>FEATURED VISUAL</span>
+              <strong>Hookah concept artwork</strong>
+              <small>Choose a finish to change the image</small>
             </div>
 
             <div className="hookah-materials glass-panel" aria-label="Hookah concept finish">
               <div className="hookah-materials__heading">
-                <span>Concept finish</span>
+                <span>Artwork finish</span>
                 <strong>{activeFinish.label}</strong>
                 <small>{activeFinish.note}</small>
               </div>
@@ -350,12 +286,12 @@ export default function App() {
                   </button>
                 ))}
               </div>
-              <p>Visual study only — not a claim about current store inventory.</p>
+              <p>Concept artwork only. Actual products and finishes may differ.</p>
             </div>
 
             <StoreSignal store={store} status={status} />
 
-            <a className="hero__scroll-cue" href="#channels" aria-label="Continue to collection channels">
+            <a className="hero__scroll-cue" href="#channels" aria-label="Continue to product categories">
               <span>Scroll to browse</span>
               <i aria-hidden="true" />
             </a>
