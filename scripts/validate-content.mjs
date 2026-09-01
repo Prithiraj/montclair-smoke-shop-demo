@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { productImageTiles } from '../src/assets/productPhotography.js';
 import { categories, products } from '../src/data/catalog.js';
 import { store } from '../src/data/store.js';
 
@@ -10,6 +11,9 @@ assert.equal(categories.length, 6);
 assert.ok(products.length >= 12);
 assert.ok(products.every((product) => categories.some((category) => category.id === product.category)));
 assert.ok(products.every((product) => product.description && product.details.length >= 3));
+assert.ok(products.every((product) => product.imageAlt && product.imageAlt.length >= 24));
+assert.ok(products.every((product) => productImageTiles[product.id]), 'Every sample item needs a photography tile.');
+assert.equal(Object.keys(productImageTiles).length, products.length);
 assert.ok(!products.some((product) => /buy now|checkout|ship/i.test(JSON.stringify(product))));
 
 const customerFacingSources = [
@@ -42,4 +46,4 @@ for (const phrase of rejectedPhrases) {
   assert.ok(!combinedCopy.toLowerCase().includes(phrase.toLowerCase()), `Remove vague phrase: ${phrase}`);
 }
 
-console.log('Content validation passed.');
+console.log('Content and product photography validation passed.');
