@@ -1,0 +1,123 @@
+name: Capture product photography review
+
+on:
+  push:
+    branches: ["feature/product-photography"]
+    paths:
+      - ".github/workflows/product-photo-qa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install and build
+        run: |
+          npm ci --no-audit --no-fund
+          npm run validate
+          npm test
+          npm run build
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Capture catalog, drawer, and visit list
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p product-photo-review
+          npm run preview -- --host 127.0.0.1 --port 4173 >/tmp/vite-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill $PREVIEW_PID || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          cat >capture.mjs <<'NODE'
+          import fs from 'node:fs';
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage'],
+          });
+          const errors = [];
+
+          const prepare = async (page, label) => {
+            page.on('console', (message) => {
+              if (message.type() === 'error') errors.push(`${label}: ${message.text()}`);
+            });
+            page.on('pageerror', (error) => errors.push(`${label}: ${error.message}`));
+            await page.addInitScript(() => {
+              sessionStorage.setItem('montclair-signal-age-ack', 'true');
+              localStorage.setItem('montclair-signal-reduce-motion', 'true');
+            });
+          };
+
+          const desktop = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+          const page = await desktop.newPage();
+          await prepare(page, 'desktop');
+          await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+          await page.locator('#explore').scrollIntoViewIfNeeded();
+          await page.waitForTimeout(900);
+          await page.screenshot({ path: 'product-photo-review/01-catalog-desktop.png' });
+          await page.locator('#explore').screenshot({ path: 'product-photo-review/02-catalog-section.png' });
+
+          const cards = page.locator('.product-card--photographic');
+          const cardCount = await cards.count();
+          if (cardCount !== 12) throw new Error(`Expected 12 product cards, received ${cardCount}`);
+
+          await cards.first().locator('.product-card__open').click();
+          await page.waitForTimeout(350);
+          await page.screenshot({ path: 'product-photo-review/03-product-drawer.png' });
+          await page.getByRole('button', { name: 'Close product details' }).click();
+
+          await cards.nth(0).getByRole('button', { name: /Add to visit list/i }).click();
+          await cards.nth(2).getByRole('button', { name: /Add to visit list/i }).click();
+          await page.getByRole('button', { name: /Visit list/i }).click();
+          await page.waitForTimeout(300);
+          await page.screenshot({ path: 'product-photo-review/04-visit-list.png' });
+          await desktop.close();
+
+          const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+          const mobilePage = await mobile.newPage();
+          await prepare(mobilePage, 'mobile');
+          await mobilePage.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+          await mobilePage.locator('#explore').scrollIntoViewIfNeeded();
+          await mobilePage.waitForTimeout(700);
+          await mobilePage.screenshot({ path: 'product-photo-review/05-catalog-mobile.png' });
+          await mobile.close();
+
+          fs.writeFileSync('product-photo-review/browser-errors.txt', `${errors.join('\n')}\n`);
+          await browser.close();
+          NODE
+
+          node capture.mjs
+          rm -f capture.mjs
+
+      - name: Upload visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-photography-review
+          path: product-photo-review
+          if-no-files-found: error
+          retention-days: 3
