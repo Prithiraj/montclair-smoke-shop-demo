@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ProductPhoto } from './ProductPhoto.jsx';
 
 export function VisitList({ open, onClose, itemIds, products, categories, onToggle, onClear, store }) {
   const [counterMode, setCounterMode] = useState(false);
@@ -43,7 +44,7 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
     >
       <aside className="visit-drawer" role="dialog" aria-modal="true" aria-labelledby="visit-list-title">
         <div className="drawer-topline">
-          <span>SAVED ON THIS DEVICE</span>
+          <span>SAVED IN THIS BROWSER</span>
           <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="Close visit list">
             ×
           </button>
@@ -51,19 +52,20 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
 
         <div className="visit-drawer__heading">
           <p className="section-kicker">Visit list</p>
-          <h2 id="visit-list-title">{counterMode ? 'Show this at the counter.' : 'Items for your visit.'}</h2>
+          <h2 id="visit-list-title">{counterMode ? 'Show these items at the counter.' : 'Items to ask about.'}</h2>
           <p>
             {counterMode
-              ? 'Show this screen at the counter and ask the store team about comparable available items.'
+              ? 'Show this screen to the store team and ask whether these or similar items are currently available.'
               : 'This list stays in this browser. It is not an order, reservation, or inventory confirmation.'}
           </p>
         </div>
 
         {items.length ? (
-          <ol className="visit-items">
+          <ol className="visit-items visit-items--photographic">
             {items.map((item, index) => (
               <li key={item.id} style={{ '--product-accent': item.accent }}>
                 <span className="visit-items__number">{String(index + 1).padStart(2, '0')}</span>
+                <ProductPhoto product={item} size="thumb" />
                 <div>
                   <strong>{item.name}</strong>
                   <span>{categoryMap[item.category]}</span>
@@ -80,14 +82,14 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
           <div className="visit-empty">
             <span aria-hidden="true">◎</span>
             <h3>No items selected yet.</h3>
-            <p>Browse the sample catalog and save items you want to ask about in store.</p>
+            <p>Browse the sample products and add items you want to ask about in store.</p>
           </div>
         )}
 
         <div className="visit-drawer__actions">
           {items.length > 0 && (
             <button className="button button--primary" type="button" onClick={() => setCounterMode((value) => !value)}>
-              {counterMode ? 'Return to list' : 'Show at counter'}
+              {counterMode ? 'Return to list' : 'Show counter view'}
             </button>
           )}
           <a className="button button--ghost" href={store.phone.href}>
