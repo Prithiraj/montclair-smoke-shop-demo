@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ProductPhoto } from './ProductPhoto.jsx';
 
 export function VisitList({ open, onClose, itemIds, products, categories, onToggle, onClear, store }) {
   const [counterMode, setCounterMode] = useState(false);
@@ -60,10 +61,11 @@ export function VisitList({ open, onClose, itemIds, products, categories, onTogg
         </div>
 
         {items.length ? (
-          <ol className="visit-items">
+          <ol className="visit-items visit-items--photographic">
             {items.map((item, index) => (
               <li key={item.id} style={{ '--product-accent': item.accent }}>
                 <span className="visit-items__number">{String(index + 1).padStart(2, '0')}</span>
+                <ProductPhoto product={item} size="thumb" />
                 <div>
                   <strong>{item.name}</strong>
                   <span>{categoryMap[item.category]}</span>
