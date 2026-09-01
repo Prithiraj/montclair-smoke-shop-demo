@@ -1,0 +1,221 @@
+/* Product photography layer. Loaded after the base and hero styles. */
+
+.product-card--photographic {
+  --photo-glow-x: var(--glow-x, 50%);
+  --photo-glow-y: var(--glow-y, 50%);
+}
+
+.product-card--photographic .product-card__visual--photo {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  height: clamp(15rem, 25vw, 18rem);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--product-accent) 13%, transparent), transparent 48%),
+    #070b10;
+}
+
+.product-card--photographic .product-card__visual--photo::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  background:
+    linear-gradient(180deg, rgba(3, 5, 8, 0.04), transparent 54%, rgba(3, 5, 8, 0.74)),
+    radial-gradient(circle at var(--photo-glow-x) var(--photo-glow-y), rgba(255, 255, 255, 0.1), transparent 24%);
+}
+
+.product-photo {
+  display: block;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: 400% auto;
+  background-position: var(--photo-x) var(--photo-y);
+  background-color: #080b10;
+}
+
+.product-photo--card {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  transform: scale(1.015);
+  transform-origin: center;
+  filter: saturate(0.98) contrast(1.03);
+  transition:
+    transform 720ms cubic-bezier(0.2, 0.75, 0.2, 1),
+    filter 480ms ease;
+}
+
+.product-card--photographic:hover .product-photo--card,
+.product-card--photographic:focus-within .product-photo--card {
+  transform: scale(1.065);
+  filter: saturate(1.08) contrast(1.06) brightness(1.04);
+}
+
+.product-card__photo-halo {
+  position: absolute;
+  z-index: 1;
+  inset: 8% 8% 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--product-accent) 20%, transparent);
+  filter: blur(48px);
+  opacity: 0.34;
+}
+
+.product-card__photo-scan {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 8%;
+  width: 84%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--product-accent) 78%, white), transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--product-accent) 38%, transparent);
+  opacity: 0;
+  transform: translateY(2rem);
+  transition: opacity 220ms ease;
+}
+
+.product-card--photographic:hover .product-card__photo-scan,
+.product-card--photographic:focus-within .product-card__photo-scan {
+  opacity: 0.5;
+  animation: product-photo-scan 2.8s ease-in-out infinite;
+}
+
+.product-card--photographic .product-card__meta {
+  z-index: 7;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.95);
+}
+
+.product-card--photographic .product-card__copy {
+  position: relative;
+  z-index: 7;
+  margin-top: -4.1rem;
+  padding-top: 3.7rem;
+  background: linear-gradient(180deg, transparent, rgba(5, 8, 12, 0.94) 52%);
+}
+
+.product-card--photographic .product-card__copy strong,
+.product-card--photographic .product-card__copy > span {
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.95);
+}
+
+.product-drawer--photographic .product-drawer__visual--photo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--product-accent) 18%, transparent), transparent 52%),
+    linear-gradient(145deg, #090e14, #040608 72%);
+}
+
+.product-drawer--photographic .product-drawer__visual--photo::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  background:
+    linear-gradient(180deg, transparent 48%, rgba(2, 3, 5, 0.7)),
+    radial-gradient(circle at 50% 45%, transparent 38%, rgba(2, 3, 5, 0.5) 100%);
+}
+
+.product-photo--drawer {
+  position: absolute;
+  z-index: 2;
+  inset: 5.5%;
+  border: 1px solid color-mix(in srgb, var(--product-accent) 26%, transparent);
+  border-radius: 1rem;
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.55),
+    0 0 48px color-mix(in srgb, var(--product-accent) 10%, transparent);
+  transform: scale(1.01);
+}
+
+.product-drawer__scan {
+  position: absolute;
+  z-index: 5;
+  left: 10%;
+  right: 10%;
+  top: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--product-accent), transparent);
+  opacity: 0.42;
+  animation: drawer-photo-scan 5.5s ease-in-out infinite;
+}
+
+.product-photo--thumb {
+  position: relative;
+  width: 4.25rem;
+  height: 4.25rem;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--product-accent) 36%, transparent);
+  border-radius: 0.7rem;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+}
+
+.visit-items--photographic li {
+  grid-template-columns: 2.2rem 4.25rem minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.visit-layer.is-counter-mode .visit-items--photographic li {
+  grid-template-columns: 2.2rem 4.25rem minmax(0, 1fr);
+}
+
+@keyframes product-photo-scan {
+  0%, 100% { transform: translateY(2rem); opacity: 0; }
+  18% { opacity: 0.48; }
+  76% { opacity: 0.34; }
+  88% { transform: translateY(14rem); opacity: 0; }
+}
+
+@keyframes drawer-photo-scan {
+  0%, 100% { transform: translateY(0); opacity: 0; }
+  18% { opacity: 0.4; }
+  72% { opacity: 0.28; }
+  86% { transform: translateY(28rem); opacity: 0; }
+}
+
+@media (max-width: 760px) {
+  .product-card--photographic .product-card__visual--photo {
+    height: 17rem;
+  }
+
+  .product-card--photographic .product-card__copy {
+    margin-top: -3.6rem;
+    padding-top: 3.2rem;
+  }
+
+  .product-photo--drawer {
+    inset: 4%;
+  }
+
+  .visit-items--photographic li,
+  .visit-layer.is-counter-mode .visit-items--photographic li {
+    grid-template-columns: 1.7rem 3.6rem minmax(0, 1fr);
+  }
+
+  .visit-items--photographic li > button {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+
+  .product-photo--thumb {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-photo--card,
+  .product-card__photo-scan,
+  .product-drawer__scan {
+    animation: none !important;
+    transition: none !important;
+  }
+}
