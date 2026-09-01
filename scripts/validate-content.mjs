@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { categories, products } from '../src/data/catalog.js';
 import { store } from '../src/data/store.js';
 
@@ -10,7 +10,26 @@ assert.equal(categories.length, 6);
 assert.ok(products.length >= 12);
 assert.ok(products.every((product) => categories.some((category) => category.id === product.category)));
 assert.ok(products.every((product) => product.description && product.details.length >= 3));
+assert.ok(products.every((product) => product.imageAlt?.trim()), 'Every product requires useful image alt text.');
 assert.ok(!products.some((product) => /buy now|checkout|ship/i.test(JSON.stringify(product))));
+
+const spritePath = new URL('../public/catalog/product-sprite.webp', import.meta.url);
+assert.ok(existsSync(spritePath), 'Catalog photography sprite is missing.');
+assert.ok(statSync(spritePath).size > 50_000, 'Catalog photography sprite is unexpectedly small.');
+
+const photoComponent = readFileSync(
+  new URL('../src/components/ProductPhoto.jsx', import.meta.url),
+  'utf8',
+);
+for (const product of products) {
+  assert.ok(photoComponent.includes(`'${product.id}'`), `No photography tile is assigned to ${product.id}.`);
+}
+
+const productExplorerSource = readFileSync(
+  new URL('../src/components/ProductExplorer.jsx', import.meta.url),
+  'utf8',
+);
+assert.ok(!productExplorerSource.includes('ProductGlyph'), 'Catalog cards must use photography, not glyph placeholders.');
 
 const customerFacingSources = [
   'index.html',
