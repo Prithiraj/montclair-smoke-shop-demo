@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ProductGlyph } from './ProductGlyph.jsx';
+import { ProductPhoto } from './ProductPhoto.jsx';
 
 function ProductCard({ product, categoryLabel, selected, onToggle, onOpen }) {
   const cardRef = useRef(null);
 
   const handlePointerMove = (event) => {
     const card = cardRef.current;
-    if (!card) return;
+    if (!card || event.pointerType === 'touch') return;
     const bounds = card.getBoundingClientRect();
     const x = (event.clientX - bounds.left) / bounds.width;
     const y = (event.clientY - bounds.top) / bounds.height;
-    card.style.setProperty('--tilt-x', `${(0.5 - y) * 7}deg`);
-    card.style.setProperty('--tilt-y', `${(x - 0.5) * 8}deg`);
+    card.style.setProperty('--tilt-x', `${(0.5 - y) * 4.5}deg`);
+    card.style.setProperty('--tilt-y', `${(x - 0.5) * 5.5}deg`);
     card.style.setProperty('--glow-x', `${x * 100}%`);
     card.style.setProperty('--glow-y', `${y * 100}%`);
   };
@@ -24,7 +24,7 @@ function ProductCard({ product, categoryLabel, selected, onToggle, onOpen }) {
   return (
     <article
       ref={cardRef}
-      className="product-card"
+      className="product-card product-card--photographic"
       style={{ '--product-accent': product.accent }}
       onPointerMove={handlePointerMove}
       onPointerLeave={resetPointer}
@@ -36,8 +36,7 @@ function ProductCard({ product, categoryLabel, selected, onToggle, onOpen }) {
           <span>{categoryLabel}</span>
         </span>
         <span className="product-card__visual">
-          <span className="product-card__orbit" aria-hidden="true" />
-          <ProductGlyph product={product} />
+          <ProductPhoto product={product} />
         </span>
         <span className="product-card__copy">
           <strong>{product.name}</strong>
@@ -45,7 +44,7 @@ function ProductCard({ product, categoryLabel, selected, onToggle, onOpen }) {
         </span>
       </button>
       <div className="product-card__footer">
-        <span>Demo item</span>
+        <span>Illustrative image</span>
         <button
           className={`mini-action${selected ? ' is-selected' : ''}`}
           type="button"
@@ -89,7 +88,7 @@ function ProductDrawer({ product, categoryLabel, selected, onToggle, onClose, st
       }}
     >
       <aside
-        className="product-drawer"
+        className="product-drawer product-drawer--photographic"
         role="dialog"
         aria-modal="true"
         aria-labelledby="product-drawer-title"
@@ -97,14 +96,20 @@ function ProductDrawer({ product, categoryLabel, selected, onToggle, onClose, st
       >
         <div className="drawer-topline">
           <span>{product.code}</span>
-          <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="Close product details">
+          <button
+            ref={closeRef}
+            className="drawer-close"
+            type="button"
+            onClick={onClose}
+            aria-label="Close product details"
+          >
             ×
           </button>
         </div>
 
         <div className="product-drawer__visual">
           <div className="product-drawer__halo" aria-hidden="true" />
-          <ProductGlyph product={product} large />
+          <ProductPhoto product={product} size="drawer" />
         </div>
 
         <div className="product-drawer__content">
@@ -118,7 +123,7 @@ function ProductDrawer({ product, categoryLabel, selected, onToggle, onClose, st
             ))}
           </ul>
           <div className="product-drawer__notice">
-            This is a design sample. Prices, stock, variants, and availability are not shown.
+            The image is illustrative. Prices, stock, variants, and availability are not shown in this demo.
           </div>
           <div className="product-drawer__actions">
             <button className="button button--primary" type="button" onClick={() => onToggle(product.id)}>
@@ -173,7 +178,8 @@ export function ProductExplorer({
           <h2 id="explore-title">Browse the sample catalog.</h2>
         </div>
         <p>
-          Search the sample catalog and save items you want to ask about in store. This demo does not show prices, stock, or checkout.
+          View realistic product examples and save items you want to ask about in store. This demo does not
+          show prices, stock, or checkout.
         </p>
       </div>
 
