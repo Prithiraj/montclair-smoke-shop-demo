@@ -91,9 +91,9 @@ jobs:
           await page.screenshot({ path: 'product-photo-review/03-product-drawer.png' });
           await page.getByRole('button', { name: 'Close product details' }).click();
 
-          await cards.nth(0).getByRole('button', { name: /Add to visit list/i }).click();
-          await cards.nth(2).getByRole('button', { name: /Add to visit list/i }).click();
-          await page.getByRole('button', { name: /Visit list/i }).click();
+          await cards.nth(0).locator('.mini-action').click();
+          await cards.nth(2).locator('.mini-action').click();
+          await page.locator('.topbar-button--list').click();
           await page.waitForTimeout(300);
           await page.screenshot({ path: 'product-photo-review/04-visit-list.png' });
           await desktop.close();
@@ -115,6 +115,7 @@ jobs:
           rm -f capture.mjs
 
       - name: Upload visual review
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: product-photography-review
